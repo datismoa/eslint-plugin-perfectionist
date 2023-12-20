@@ -1,0 +1,1 @@
+export let getOffsetBetweenLocations = (locationBefore: TSESTree.SourceLocation, locationAfter: TSESTree.SourceLocation) => locationAfter.end.line - locationBefore.end.line

@@ -5,8 +5,8 @@ import { ASTUtils } from '@typescript-eslint/utils'
 
 import type { PartitionComment } from '../typings'
 
+import { extractStickedComments } from './extract-sticked-comments'
 import { isPartitionComment } from './is-partition-comment'
-import { getCommentBefore } from './get-comment-before'
 
 export let getNodeRange = (
   node: TSESTree.Node,
@@ -35,7 +35,9 @@ export let getNodeRange = (
     end = bodyClosingParen.range.at(1)!
   }
 
-  let comment = getCommentBefore(node, sourceCode)
+  let comments = extractStickedComments(node, sourceCode)
+
+  let hasAtLeastOneComment = comments.length > 0
 
   if (raw.endsWith(';') || raw.endsWith(',')) {
     let tokensAfter = sourceCode.getTokensAfter(node, {
@@ -49,13 +51,13 @@ export let getNodeRange = (
   }
 
   if (
-    comment &&
+    hasAtLeastOneComment &&
     !isPartitionComment(
       additionalOptions?.partitionComment ?? false,
-      comment.value,
+      comments.at(-1)!.value,
     )
   ) {
-    start = comment.range.at(0)!
+    start = comments.at(0)!.range.at(0)!
   }
 
   return [start, end]
