@@ -5,9 +5,10 @@ import { getOffsetBetweenLocations } from './get-offset-between-locations'
 export let extractStickedComments = (node: TSESTree.Node, source: TSESLint.SourceCode) => {
   let comments = source.getCommentsBefore(node)
   let [firstComment, ...nextComments] = comments
+  let lastComment = comments.at(-1)
 
-  if (!firstComment) {
-    return comments
+  if (!firstComment || getOffsetBetweenLocations(lastComment!.loc, node.loc) !== 1) {
+    return []
   }
 
   let tokenBeforeComments = source.getTokenBefore(firstComment)
